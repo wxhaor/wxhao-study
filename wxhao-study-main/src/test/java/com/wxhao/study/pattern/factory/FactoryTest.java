@@ -16,7 +16,7 @@ public class FactoryTest {
 
 
     @Test
-    public void simpleFactoryTest() {
+    public void testSimpleFactory() {
 
 //        ICourse course = new JavaCourse();
 //        course.record();
@@ -32,7 +32,7 @@ public class FactoryTest {
     }
 
     @Test
-    public void factoryMethodTest() {
+    public void testFactoryMethod() {
 
         ICarFactory factory = new BenzCarFactory();
         ICar course = factory.create();
@@ -45,7 +45,7 @@ public class FactoryTest {
     }
 
     @Test
-    public void abstractFactoryTest() {
+    public void testSbstractFactory() {
 
         AudiCarFactory factory = new AudiCarFactory();
 
