@@ -3,15 +3,14 @@ package com.wxhao.study.pattern.factory.method;
 import com.wxhao.study.pattern.factory.ICar;
 
 /**
- * 工厂模型
- * 造车工厂
+ * 工厂方法 造车工厂
  */
 public interface ICarFactory {
 
     /**
-     * 造车
+     * 提供材料
      * @return
      */
-    ICar create();
+    ICar provide();
 
 }

@@ -1,15 +1,18 @@
 package com.wxhao.study.pattern.factory.abs;
 
-
-public class AudiCarFactory implements ICarProductFactory {
+/**
+ * 奔驰工厂
+ */
+public class BenzCarProductFactory implements ICarProductFactory {
 
     @Override
     public ITire createTire() {
-        return new AudiTire();
+        return new BenzTire();
     }
+
 
     @Override
     public IEngine createEngine() {
-        return new AudiEngine();
+        return new BenzEngine();
     }
 }

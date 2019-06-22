@@ -1,7 +1,7 @@
 package com.wxhao.study.pattern.factory.method;
 
-import com.wxhao.study.pattern.factory.ICar;
 import com.wxhao.study.pattern.factory.AudiCar;
+import com.wxhao.study.pattern.factory.ICar;
 
 
 /**
@@ -10,8 +10,8 @@ import com.wxhao.study.pattern.factory.AudiCar;
 public class AudiCarFactory implements ICarFactory {
 
     @Override
-    public ICar create() {
-        return new AudiCar();
+    public ICar provide() {
+        return new AudiCar("很帅", "很亮");
     }
 
 }
