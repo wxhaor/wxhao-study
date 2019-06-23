@@ -4,7 +4,6 @@ package com.wxhao.study.pattern.singleton.lazy;
  * 静态内部类懒汉式单例
  * 这种形式兼顾饿汉式的内存浪费，也兼顾synchronized性能问题
  * 完美地屏蔽了这两个缺点
- * 史上最牛B的单例模式的实现方式
  */
 public class LazyInnerClassSingleton {
 
