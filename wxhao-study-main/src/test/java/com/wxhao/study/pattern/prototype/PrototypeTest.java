@@ -17,7 +17,8 @@ import java.util.List;
 public class PrototypeTest {
 
     @Test
-    public void prototypeTest() {
+    public void testPrototype() {
+        //简单克隆
 
         // 创建一个具体的需要克隆的对象
         ConcretePrototypeA concretePrototype = new ConcretePrototypeA();
@@ -40,14 +41,10 @@ public class PrototypeTest {
     }
 
     @Test
-    public void deepCloneTest() {
+    public void testDeepClone() {
         QiTianDaSheng qiTianDaSheng = new QiTianDaSheng();
-        try {
-            QiTianDaSheng clone = (QiTianDaSheng)qiTianDaSheng.clone();
-            System.out.println("深克隆：" + (qiTianDaSheng.jinGuBang == clone.jinGuBang));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        QiTianDaSheng clone = qiTianDaSheng.clone();
+        System.out.println("深克隆：" + (qiTianDaSheng.jinGuBang == clone.jinGuBang));
 
         QiTianDaSheng q = new QiTianDaSheng();
         QiTianDaSheng n = q.shallowClone(q);

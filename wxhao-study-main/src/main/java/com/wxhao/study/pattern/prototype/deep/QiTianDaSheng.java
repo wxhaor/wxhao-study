@@ -16,12 +16,12 @@ public class QiTianDaSheng extends Monkey implements Cloneable, Serializable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public QiTianDaSheng clone() {
         return this.deepClone();
     }
 
 
-    public Object deepClone() {
+    public QiTianDaSheng deepClone() {
         try {
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -53,6 +53,5 @@ public class QiTianDaSheng extends Monkey implements Cloneable, Serializable {
         qiTianDaSheng.birthday = new Date();
         return qiTianDaSheng;
     }
-
 
 }

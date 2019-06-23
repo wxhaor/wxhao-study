@@ -1,17 +1,14 @@
 package com.wxhao.study.pattern.prototype.simple;
 
-/**
- * Created by Tom.
- */
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class Client {
 
     private Prototype prototype;
 
-    public Client(Prototype prototype){
-        this.prototype = prototype;
-    }
     public Prototype startClone(Prototype concretePrototype){
-        return (Prototype)concretePrototype.clone();
+        return concretePrototype.clone();
     }
 
 }
