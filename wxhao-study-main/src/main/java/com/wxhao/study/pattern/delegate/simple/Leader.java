@@ -6,16 +6,18 @@ import java.util.Map;
 
 public class Leader implements IEmployee {
 
-    private Map<String,IEmployee> targets = new HashMap<String,IEmployee>();
+    private Map<String, IEmployee> targets = new HashMap<String, IEmployee>();
 
     public Leader() {
-        targets.put("加密",new EmployeeA());
-        targets.put("登录",new EmployeeB());
+        //A员工更擅长Excel
+        targets.put("Excel", new EmployeeA());
+        //B员工更擅长PPT
+        targets.put("PPT", new EmployeeB());
     }
 
-    //项目经理自己不干活
     @Override
-    public void doing(String command){
+    public void doing(String command) {
+        //项目经理自己不干活,把任务指派给别人
         targets.get(command).doing(command);
     }
 

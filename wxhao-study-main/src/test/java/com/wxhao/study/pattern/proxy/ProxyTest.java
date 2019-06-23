@@ -44,11 +44,30 @@ public class ProxyTest {
         Father father = new Father(new Son());
         father.findLove();
 
-
         //大家每天都在用的一种静态代理的形式
         //对数据库进行分库分表
         //ThreadLocal
         //进行数据源动态切换
+    }
+
+
+    @Test
+    public void testDbRouteProxy() {
+        try {
+            Order order = new Order();
+
+//            order.setCreateTime(new Date().getTime());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = sdf.parse("2017/02/01");
+            order.setCreateTime(date.getTime());
+
+            IOrderService orderService = (IOrderService) new OrderServiceDynamicProxy().getInstance(new OrderService());
+            orderService.createOrder(order);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test
@@ -74,64 +93,38 @@ public class ProxyTest {
         }
     }
 
+
     @Test
-    public void testCglib() {
-        try {
+    public void testCustomProxy() throws Exception {
 
-            //JDK是采用读取接口的信息
-            //CGLib覆盖父类方法
-            //目的：都是生成一个新的类，去实现增强代码逻辑的功能
+        //JDK动态代理的实现原理
+        Person obj = (Person) new MyMeipo().getInstance(new Girl());
+        System.out.println(obj.getClass());
+        obj.findLove();
 
-            //JDK Proxy 对于用户而言，必须要有一个接口实现，目标类相对来说复杂
-            //CGLib 可以代理任意一个普通的类，没有任何要求
-
-            //CGLib 生成代理逻辑更复杂，效率,调用效率更高，生成一个包含了所有的逻辑的FastClass，不再需要反射调用
-            //JDK Proxy生成代理的逻辑简单，执行效率相对要低，每次都要反射动态调用
-
-            //CGLib 有个坑，CGLib不能代理final的方法
-
-            //设置debug类输出到
-            System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, this.getClass().getResource("").getPath());
-
-            Customer obj = (Customer) new CglibMeipo().getInstance(Customer.class);
-            System.out.println(obj);
-            obj.findLove();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
-    public void testCustomProxy() {
-        try {
+    public void testCglib() throws Exception {
 
-            //JDK动态代理的实现原理
-            Person obj = (Person) new MyMeipo().getInstance(new Girl());
-            System.out.println(obj.getClass());
-            obj.findLove();
+        //JDK是采用读取接口的信息
+        //CGLib覆盖父类方法
+        //目的：都是生成一个新的类，去实现增强代码逻辑的功能
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+        //JDK Proxy 对于用户而言，必须要有一个接口实现，目标类相对来说复杂
+        //CGLib 可以代理任意一个普通的类，没有任何要求
 
-    @Test
-    public void testDbRouteProxy() {
-        try {
-            Order order = new Order();
+        //CGLib 生成代理逻辑更复杂，效率,调用效率更高，生成一个包含了所有的逻辑的FastClass，不再需要反射调用
+        //JDK Proxy生成代理的逻辑简单，执行效率相对要低，每次都要反射动态调用
 
-//            order.setCreateTime(new Date().getTime());
+        //CGLib 有个坑，CGLib不能代理final的方法
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            Date date = sdf.parse("2017/02/01");
-            order.setCreateTime(date.getTime());
+        //设置debug类输出到
+        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, this.getClass().getResource("").getPath());
 
-            IOrderService orderService = (IOrderService) new OrderServiceDynamicProxy().getInstance(new OrderService());
-            orderService.createOrder(order);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        Customer obj = (Customer) new CglibMeipo().getInstance(Customer.class);
+        System.out.println(obj);
+        obj.findLove();
     }
 
 

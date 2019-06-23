@@ -1,6 +1,8 @@
 package com.wxhao.study.pattern.delegate.mvc;
 
 import com.wxhao.study.pattern.delegate.mvc.controllers.MemberController;
+import com.wxhao.study.pattern.delegate.mvc.controllers.OrderController;
+import com.wxhao.study.pattern.delegate.mvc.controllers.SystemController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,24 +34,38 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-//    private void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception{
-//
-//        String uri = request.getRequestURI();
-//
-//        String mid = request.getParameter("mid");
-//
-//        if("getMemberById".equals(uri)){
-//            new MemberController().getMemberById(mid);
-//        }else if("getOrderById".equals(uri)){
-//            new OrderController().getOrderById(mid);
-//        }else if("logout".equals(uri)){
-//            new SystemController().logout();
-//        }else {
-//            response.getWriter().write("404 Not Found!!");
-//        }
-//
-//    }
+    /**
+     * doDispatch 手写
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    private void doDispatch1(HttpServletRequest request, HttpServletResponse response) throws Exception{
 
+        String uri = request.getRequestURI();
+
+        String mid = request.getParameter("mid");
+
+        if("getMemberById".equals(uri)){
+            new MemberController().getMemberById(mid);
+        }else if("getOrderById".equals(uri)){
+            new OrderController().getOrderById(mid);
+        }else if("logout".equals(uri)){
+            new SystemController().logout();
+        }else {
+            response.getWriter().write("404 Not Found!!");
+        }
+
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            doDispatch(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void doDispatch(HttpServletRequest request, HttpServletResponse response) {
 
@@ -84,17 +100,6 @@ public class DispatcherServlet extends HttpServlet {
 
     }
 
-
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            doDispatch(req, resp);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     class Handler {
 
         private Object controller;
@@ -128,6 +133,5 @@ public class DispatcherServlet extends HttpServlet {
             return this;
         }
     }
-
 
 }

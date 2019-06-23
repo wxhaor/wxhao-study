@@ -1,5 +1,6 @@
 package com.wxhao.study.pattern.delegate;
 
+import com.wxhao.study.pattern.delegate.mvc.DispatcherServlet;
 import com.wxhao.study.pattern.delegate.simple.Boss;
 import com.wxhao.study.pattern.delegate.simple.Leader;
 import org.junit.Test;
@@ -23,7 +24,12 @@ public class DelegateTest {
 
         //委派模式：就是静态代理和策略模式一种特殊的组合
 
-        new Boss().command("登录",new Leader());
+        new Boss().command("Excel",new Leader());
+    }
+
+    @Test
+    public void webapp(){
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();
     }
 
 /*

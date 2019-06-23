@@ -17,9 +17,4 @@ public class Father implements Person {
         System.out.println("双方父母同意，确立关系");
     }
 
-    public void findJob() {
-
-    }
-
-
 }
