@@ -2,6 +2,7 @@ package com.wxhao.study.spring.controller;
 
 import com.wxhao.study.spring.core.annotation.Controller;
 import com.wxhao.study.spring.core.annotation.RequestMapping;
+import com.wxhao.study.spring.core.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,8 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 public class UserController {
 
     @RequestMapping("/login")
-    public String login(HttpServletRequest req) {
-        return "登录成功!ip:" + req.getRemoteHost();
+    public String login(HttpServletRequest req,
+                        @RequestParam("username") String username,
+                        @RequestParam("password") String password) {
+        String queryString = req.getQueryString();
+        System.out.println(queryString);
+        return "登录成功!,用户名为:" + username + ",password:" + password;
     }
 
 }

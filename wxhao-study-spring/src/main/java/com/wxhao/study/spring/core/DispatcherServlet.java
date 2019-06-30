@@ -1,10 +1,10 @@
 package com.wxhao.study.spring.core;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wxhao.study.spring.core.annotation.Autowire;
-import com.wxhao.study.spring.core.annotation.Controller;
-import com.wxhao.study.spring.core.annotation.RequestMapping;
-import com.wxhao.study.spring.core.annotation.Service;
+import com.wxhao.study.spring.core.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,15 +13,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author wxhao
@@ -34,7 +38,7 @@ public class DispatcherServlet extends HttpServlet {
     private ClassLoader classLoader = this.getClass().getClassLoader();
     private List<String> tobeLoadClass = new ArrayList<>();
     private Map<String, Object> ioc = new ConcurrentHashMap<>();
-
+    private List<HandlerMapping> handlerMappings = new ArrayList<>();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -46,23 +50,25 @@ public class DispatcherServlet extends HttpServlet {
 
         //2. 扫描待加载类
         scanningClass(myConfig.getProperty("scanPackage").replaceAll("\\.", "/"));
-        System.out.println("--tobeLoadClass:" + JSONObject.toJSONString(tobeLoadClass));
+        System.out.println("-ws-: tobeLoadClass:" + JSONObject.toJSONString(tobeLoadClass));
 
         //3. 加载类 到IOC容器
 
         loadClass();
-        System.out.println("--ioc:" + JSONObject.toJSONString(ioc));
+        System.out.println("-ws-: ioc:" + JSONObject.toJSONString(ioc));
 
         //4. DI and HandlerMapping
         doDI();
-        System.out.println("--handlerMappingMap:" + JSONObject.toJSONString(handlerMappingMap));
+        System.out.println("-ws-: handlerMappingMap:" + JSONObject.toJSONString(handlerMappings));
 
 
     }
 
-    private Map<String, Method> handlerMappingMap = new ConcurrentHashMap<>();
 
     private void doDI() {
+
+        //
+
         for (String s : tobeLoadClass) {
             try {
                 String fullName = s.replaceAll("/", "\\.").substring(0, s.lastIndexOf("."));
@@ -91,7 +97,10 @@ public class DispatcherServlet extends HttpServlet {
                     if (method.isAnnotationPresent(RequestMapping.class)) {
                         sb.append("/");
                         sb.append(method.getAnnotation(RequestMapping.class).value());
-                        handlerMappingMap.put(sb.toString().replaceAll("/+", "/"), method);
+                        String regex = sb.toString().replaceAll("/+", "/");
+                        Pattern pattern = Pattern.compile(regex);
+                        HandlerMapping handlerMapping = new HandlerMapping(pattern, obj, method);
+                        handlerMappings.add(handlerMapping);
                     }
                 }
 
@@ -110,6 +119,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void loadClass() {
+        //加载@service class文件 并放入IOC容器
         tobeLoadClass.forEach(s -> {
             try {
                 String fullName = s.replaceAll("/", "\\.").substring(0, s.lastIndexOf("."));
@@ -132,6 +142,7 @@ public class DispatcherServlet extends HttpServlet {
 
 
     private void scanningClass(String scanPackage) {
+        //扫描所有class文件
         URL resource = classLoader.getResource(scanPackage);
         File parentFile = new File(resource.getFile());
         for (File file : parentFile.listFiles()) {
@@ -148,6 +159,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void loadConfig(String configName) {
+        //加载配置文件
         try {
             myConfig.load(classLoader.getResourceAsStream(configName));
         } catch (IOException e) {
@@ -162,12 +174,28 @@ public class DispatcherServlet extends HttpServlet {
         String contextPath = req.getContextPath();
 
         String url = ("/" + requestURI.substring(requestURI.indexOf(contextPath) + contextPath.length())).replaceAll("/+", "/");
-        Method method = handlerMappingMap.get(url);
-        if (method == null) {
+        HandlerMapping handlerMapping = null;
+        for (HandlerMapping hm : handlerMappings) {
+            Matcher matcher = hm.getPattern().matcher(url);
+            if (matcher.matches()) {
+                if (handlerMapping == null) {
+                    handlerMapping = hm;
+                } else {
+                    throw new RuntimeException("匹配到多个");
+                }
+            }
+        }
+
+        if (handlerMapping == null) {
             resp.getWriter().println("404");
         }
 
+        // key 多个value
+        Map<String, String[]> parameterMap = req.getParameterMap();
+
+        Method method = handlerMapping.getMethod();
         try {
+            Parameter[] parameters = method.getParameters();
             Class<?>[] parameterTypes = method.getParameterTypes();
             Object[] args = new Object[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
@@ -176,16 +204,37 @@ public class DispatcherServlet extends HttpServlet {
                     args[i] = req;
                 } else if (parameterType == HttpServletResponse.class) {
                     args[i] = resp;
+                } else {
+                    Parameter parameter = parameters[i];
+                    if (parameter.isAnnotationPresent(RequestParam.class)) {
+                        String name = parameter.getAnnotation(RequestParam.class).value();
+
+                        String[] strings = parameterMap.get(name);
+                        String value = null;
+                        if (strings == null || strings.length == 0) {
+                            continue;
+                        }
+
+                        if (strings.length == 1) {
+                            value = strings[0];
+                        } else {
+                            value = JSONObject.toJSONString(strings);
+                        }
+                        args[i] = value;
+                    }
+
                 }
             }
 
-            Object obj = ioc.get(method.getDeclaringClass().getName());
-            Object invoke ;
+            Object obj = handlerMapping.getObject();
+            Object invoke;
             if (args.length == 0) {
                 invoke = method.invoke(obj);
             } else {
                 invoke = method.invoke(obj, args);
             }
+            resp.setHeader("Content-type", "text/html;charset=UTF-8");
+            resp.setCharacterEncoding("UTF-8");
             resp.getWriter().println(invoke);
 
         } catch (IllegalAccessException e) {
@@ -203,5 +252,26 @@ public class DispatcherServlet extends HttpServlet {
         doPost(req, resp);
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class HandlerMapping {
+
+        /**
+         * 待匹配正则
+         */
+        private Pattern pattern;
+
+        /**
+         * controller对象
+         */
+        private Object object;
+
+        /**
+         * 方法
+         */
+        private Method method;
+
+    }
 
 }

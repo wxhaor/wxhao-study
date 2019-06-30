@@ -20,4 +20,10 @@ public class IndexController {
         return helloService.sayHello();
     }
 
+    @RequestMapping("/x/.*")
+    public String x(){
+        return "x";
+    }
+
+
 }
