@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -86,7 +85,7 @@ public class DispatcherServlet extends HttpServlet {
 
                 Field[] declaredFields = clazz.getDeclaredFields();
                 for (Field declaredField : declaredFields) {
-                    if (declaredField.isAnnotationPresent(Autowire.class)) {
+                    if (declaredField.isAnnotationPresent(Autowired.class)) {
                         declaredField.setAccessible(true);
                         declaredField.set(obj, ioc.get(declaredField.getType().getName()));
                     }

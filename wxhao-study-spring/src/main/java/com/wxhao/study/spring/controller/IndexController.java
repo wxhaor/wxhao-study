@@ -1,6 +1,6 @@
 package com.wxhao.study.spring.controller;
 
-import com.wxhao.study.spring.core.annotation.Autowire;
+import com.wxhao.study.spring.core.annotation.Autowired;
 import com.wxhao.study.spring.core.annotation.Controller;
 import com.wxhao.study.spring.core.annotation.RequestMapping;
 import com.wxhao.study.spring.service.HelloService;
@@ -12,7 +12,7 @@ import com.wxhao.study.spring.service.HelloService;
 @Controller
 public class IndexController {
 
-    @Autowire
+    @Autowired
     private HelloService helloService;
 
     @RequestMapping("/")
