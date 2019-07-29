@@ -1,6 +1,6 @@
 package com.wxhao.study.spring.service;
 
-import com.wxhao.study.spring.core.annotation.Service;
+import com.wxhao.study.spring.annotation.Service;
 
 /**
  * @author wxhao

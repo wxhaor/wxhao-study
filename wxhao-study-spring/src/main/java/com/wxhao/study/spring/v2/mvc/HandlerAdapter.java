@@ -1,6 +1,6 @@
 package com.wxhao.study.spring.v2.mvc;
 
-import com.wxhao.study.spring.core.annotation.RequestParam;
+import com.wxhao.study.spring.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

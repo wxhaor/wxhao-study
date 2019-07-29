@@ -1,8 +1,8 @@
 package com.wxhao.study.spring.controller;
 
-import com.wxhao.study.spring.core.annotation.Controller;
-import com.wxhao.study.spring.core.annotation.RequestMapping;
-import com.wxhao.study.spring.core.annotation.RequestParam;
+import com.wxhao.study.spring.annotation.Controller;
+import com.wxhao.study.spring.annotation.RequestMapping;
+import com.wxhao.study.spring.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 

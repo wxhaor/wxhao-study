@@ -1,7 +1,7 @@
-package com.wxhao.study.spring.core;
+package com.wxhao.study.spring.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wxhao.study.spring.core.annotation.*;
+import com.wxhao.study.spring.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

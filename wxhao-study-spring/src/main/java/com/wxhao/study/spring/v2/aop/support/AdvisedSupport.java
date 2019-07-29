@@ -1,19 +1,17 @@
 package com.wxhao.study.spring.v2.aop.support;
 
-import com.gupaoedu.vip.spring.formework.aop.aspect.GPAfterReturningAdviceInterceptor;
-import com.gupaoedu.vip.spring.formework.aop.aspect.GPAfterThrowingAdviceInterceptor;
-import com.gupaoedu.vip.spring.formework.aop.aspect.GPMethodBeforeAdviceInterceptor;
-import com.gupaoedu.vip.spring.formework.aop.config.GPAopConfig;
+import com.wxhao.study.spring.v2.aop.aspect.AfterReturningAdviceInterceptor;
+import com.wxhao.study.spring.v2.aop.aspect.AfterThrowingAdviceInterceptor;
+import com.wxhao.study.spring.v2.aop.aspect.MethodBeforeAdviceInterceptor;
+import com.wxhao.study.spring.v2.aop.config.AopConfig;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
-import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * Created by Tom on 2019/4/14.
@@ -24,33 +22,33 @@ public class AdvisedSupport {
 
     private Object target;
 
-    private GPAopConfig config;
+    private AopConfig config;
 
     private Pattern pointCutClassPattern;
 
     private transient Map<Method, List<Object>> methodCache;
 
-    public AdvisedSupport(GPAopConfig config) {
+    public AdvisedSupport(AopConfig config) {
         this.config = config;
     }
 
-    public Class<?> getTargetClass(){
+    public Class<?> getTargetClass() {
         return this.targetClass;
     }
 
-    public Object getTarget(){
+    public Object getTarget() {
         return this.target;
     }
 
-    public List<Object> getInterceptorsAndDynamicInterceptionAdvice(Method method, Class<?> targetClass) throws Exception{
+    public List<Object> getInterceptorsAndDynamicInterceptionAdvice(Method method, Class<?> targetClass) throws Exception {
         List<Object> cached = methodCache.get(method);
-        if(cached == null){
-            Method m = targetClass.getMethod(method.getName(),method.getParameterTypes());
+        if (cached == null) {
+            Method m = targetClass.getMethod(method.getName(), method.getParameterTypes());
 
             cached = methodCache.get(m);
 
             //底层逻辑，对代理方法进行一个兼容处理
-            this.methodCache.put(m,cached);
+            this.methodCache.put(m, cached);
         }
 
         return cached;
@@ -63,13 +61,13 @@ public class AdvisedSupport {
 
     private void parse() {
         String pointCut = config.getPointCut()
-                .replaceAll("\\.","\\\\.")
-                .replaceAll("\\\\.\\*",".*")
-                .replaceAll("\\(","\\\\(")
-                .replaceAll("\\)","\\\\)");
+                .replaceAll("\\.", "\\\\.")
+                .replaceAll("\\\\.\\*", ".*")
+                .replaceAll("\\(", "\\\\(")
+                .replaceAll("\\)", "\\\\)");
         //pointCut=public .* com.gupaoedu.vip.spring.demo.service..*Service..*(.*)
         //玩正则
-        String pointCutForClassRegex = pointCut.substring(0,pointCut.lastIndexOf("\\(") - 4);
+        String pointCutForClassRegex = pointCut.substring(0, pointCut.lastIndexOf("\\(") - 4);
         pointCutClassPattern = Pattern.compile("class " + pointCutForClassRegex.substring(
                 pointCutForClassRegex.lastIndexOf(" ") + 1));
 
@@ -79,11 +77,10 @@ public class AdvisedSupport {
             Pattern pattern = Pattern.compile(pointCut);
 
 
-
             Class aspectClass = Class.forName(this.config.getAspectClass());
-            Map<String,Method> aspectMethods = new HashMap<String,Method>();
+            Map<String, Method> aspectMethods = new HashMap<String, Method>();
             for (Method m : aspectClass.getMethods()) {
-                aspectMethods.put(m.getName(),m);
+                aspectMethods.put(m.getName(), m);
             }
 
             for (Method m : this.targetClass.getMethods()) {
@@ -93,35 +90,35 @@ public class AdvisedSupport {
                 }
 
                 Matcher matcher = pattern.matcher(methodString);
-                if(matcher.matches()){
+                if (matcher.matches()) {
                     //执行器链
                     List<Object> advices = new LinkedList<Object>();
                     //把每一个方法包装成 MethodIterceptor
                     //before
-                    if(!(null == config.getAspectBefore() || "".equals(config.getAspectBefore()))) {
+                    if (!(null == config.getAspectBefore() || "".equals(config.getAspectBefore()))) {
                         //创建一个Advivce
-                        advices.add(new GPMethodBeforeAdviceInterceptor(aspectMethods.get(config.getAspectBefore()),aspectClass.newInstance()));
+                        advices.add(new MethodBeforeAdviceInterceptor(aspectMethods.get(config.getAspectBefore()), aspectClass.newInstance()));
                     }
                     //after
-                    if(!(null == config.getAspectAfter() || "".equals(config.getAspectAfter()))) {
+                    if (!(null == config.getAspectAfter() || "".equals(config.getAspectAfter()))) {
                         //创建一个Advivce
-                        advices.add(new GPAfterReturningAdviceInterceptor(aspectMethods.get(config.getAspectAfter()),aspectClass.newInstance()));
+                        advices.add(new AfterReturningAdviceInterceptor(aspectMethods.get(config.getAspectAfter()), aspectClass.newInstance()));
                     }
                     //afterThrowing
-                    if(!(null == config.getAspectAfterThrow() || "".equals(config.getAspectAfterThrow()))) {
+                    if (!(null == config.getAspectAfterThrow() || "".equals(config.getAspectAfterThrow()))) {
                         //创建一个Advivce
-                        GPAfterThrowingAdviceInterceptor throwingAdvice =
-                        new GPAfterThrowingAdviceInterceptor(
-                                aspectMethods.get(config.getAspectAfterThrow()),
-                                aspectClass.newInstance());
+                        AfterThrowingAdviceInterceptor throwingAdvice =
+                                new AfterThrowingAdviceInterceptor(
+                                        aspectMethods.get(config.getAspectAfterThrow()),
+                                        aspectClass.newInstance());
                         throwingAdvice.setThrowName(config.getAspectAfterThrowingName());
                         advices.add(throwingAdvice);
                     }
-                    methodCache.put(m,advices);
+                    methodCache.put(m, advices);
                 }
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

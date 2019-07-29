@@ -1,4 +1,4 @@
-package com.wxhao.study.spring.core.annotation;
+package com.wxhao.study.spring.annotation;
 
 import java.lang.annotation.*;
 

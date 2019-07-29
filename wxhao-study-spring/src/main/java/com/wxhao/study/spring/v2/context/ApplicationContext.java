@@ -1,8 +1,8 @@
 package com.wxhao.study.spring.v2.context;
 
-import com.wxhao.study.spring.core.annotation.Autowired;
-import com.wxhao.study.spring.core.annotation.Controller;
-import com.wxhao.study.spring.core.annotation.Service;
+import com.wxhao.study.spring.annotation.Autowired;
+import com.wxhao.study.spring.annotation.Controller;
+import com.wxhao.study.spring.annotation.Service;
 import com.wxhao.study.spring.v2.beans.*;
 
 import java.lang.reflect.Field;

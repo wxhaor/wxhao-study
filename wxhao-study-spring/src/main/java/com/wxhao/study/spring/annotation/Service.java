@@ -1,4 +1,4 @@
-package com.wxhao.study.spring.core.annotation;
+package com.wxhao.study.spring.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
  * @author wxhao
  * @date 2019/6/27
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Autowired {
+public @interface Service {
 
-    String value() default "";
+    String name() default "";
 
 }

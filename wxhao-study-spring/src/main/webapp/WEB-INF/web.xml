@@ -12,7 +12,7 @@
 
   <servlet>
     <servlet-name>myspring</servlet-name>
-    <servlet-class>com.wxhao.study.spring.core.DispatcherServlet</servlet-class>
+    <servlet-class>com.wxhao.study.spring.v1.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>configName</param-name>
       <param-value>application.properties</param-value>

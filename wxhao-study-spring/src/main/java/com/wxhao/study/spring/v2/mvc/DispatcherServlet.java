@@ -1,7 +1,8 @@
 package com.wxhao.study.spring.v2.mvc;
 
-import com.wxhao.study.spring.core.annotation.Controller;
-import com.wxhao.study.spring.core.annotation.RequestMapping;
+
+import com.wxhao.study.spring.annotation.Controller;
+import com.wxhao.study.spring.annotation.RequestMapping;
 import com.wxhao.study.spring.v2.context.ApplicationContext;
 import lombok.extern.slf4j.Slf4j;
 
