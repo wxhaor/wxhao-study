@@ -9,11 +9,14 @@ import java.util.stream.Stream;
  */
 public class FileUtils {
 
-
+    /**
+     * 递归删除文件夹
+     *
+     * @param path
+     */
     public static void deleteChildrenFile(String path) {
         File file = new File(path);
         Stream.of(file.listFiles()).forEach(f -> {
-            System.out.println(file.getPath());
             if (f.isDirectory()) {
                 if (f.list().length > 0) {
                     deleteChildrenFile(f.getPath());
