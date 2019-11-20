@@ -13,9 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * 新版 兼容
+ */
 @Slf4j
 public class BdwpTest {
-    static String groupFolder = "01.架构师内功心法";
+    static String groupFolder = "04.分布式与微服务";
     String bdwpFolder = "D:\\咕泡学院\\百度网盘\\" + groupFolder;
 
     @Test
@@ -23,7 +26,7 @@ public class BdwpTest {
         File bdwpFile = new File(bdwpFolder);
 
         Stream.of(FolderConfig.values()).forEach(folderConfig -> {
-            FileUtils.deleteChildrenFile(folderConfig.getRootFolder());
+            //FileUtils.deleteChildrenFile(folderConfig.getRootFolder());
         });
         Stream.of(FolderConfig.values()).forEach(folderConfig -> {
             File targetFile = new File(folderConfig.getRootFolder());

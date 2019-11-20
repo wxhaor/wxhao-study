@@ -1,7 +1,11 @@
 package com.wxhao.study.filetool;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * @author wxhao
@@ -39,6 +43,10 @@ public class FileUtils {
         File sourceFile = new File(sourceFilePath);
         File targetFile = new File(targetFilePath);
 
+        if (targetFile.exists()) {
+            return;
+        }
+
         // 新建文件输入流并对它进行缓冲
         FileInputStream input = new FileInputStream(sourceFile);
         BufferedInputStream inBuff = new BufferedInputStream(input);
@@ -62,5 +70,68 @@ public class FileUtils {
         output.close();
         input.close();
     }
+
+    /**
+     * 不存在就创建目录
+     *
+     * @param path
+     */
+    public static void ifNotExistsMkdir(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            if (!file.mkdir()) {
+                System.out.println("mkdirFalse:" + path);
+            }
+        }
+    }
+
+    /**
+     * 解压文件到指定目录
+     */
+    @SuppressWarnings({"rawtypes", "resource"})
+    public static void unZip(String zipPath, String descDir) throws IOException {
+        //log.info("文件:{}. 解压路径:{}. 解压开始.",zipPath,descDir);
+        try {
+            File zipFile = new File(zipPath);
+            System.err.println(zipFile.getName());
+            if (!zipFile.exists()) {
+                throw new IOException("需解压文件不存在.");
+            }
+            File pathFile = new File(descDir);
+            if (!pathFile.exists()) {
+                pathFile.mkdirs();
+            }
+            ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));
+            for (Enumeration entries = zip.entries(); entries.hasMoreElements(); ) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                String zipEntryName = entry.getName();
+                System.err.println(zipEntryName);
+                InputStream in = zip.getInputStream(entry);
+                String outPath = (descDir + File.separator + zipEntryName);
+                System.err.println(outPath);
+                // 判断路径是否存在,不存在则创建文件路径
+                File file = new File(outPath.substring(0, outPath.lastIndexOf('\\')));
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                // 判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压
+                if (new File(outPath).isDirectory()) {
+                    continue;
+                }
+                // 输出文件路径信息
+                OutputStream out = new FileOutputStream(outPath);
+                byte[] buf1 = new byte[1024];
+                int len;
+                while ((len = in.read(buf1)) > 0) {
+                    out.write(buf1, 0, len);
+                }
+                in.close();
+                out.close();
+            }
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
 
 }
