@@ -9,7 +9,7 @@
         <version>2.0.0.RELEASE</version>
         <!--<relativePath/>  lookup parent from repository -->
     </parent>
-    
+
     <groupId>com.wxhao</groupId>
     <artifactId>wxhao-study-main</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -106,6 +106,7 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.60</version>
         </dependency>
+
     </dependencies>
 
     <build>

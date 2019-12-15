@@ -1,5 +1,7 @@
 package com.wxhao.study.filetool;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
@@ -39,7 +41,6 @@ public class FileUtils {
      */
     public static void copyFile(String sourceFilePath, String targetFilePath)
             throws IOException {
-
         File sourceFile = new File(sourceFilePath);
         File targetFile = new File(targetFilePath);
 
@@ -56,7 +57,7 @@ public class FileUtils {
         BufferedOutputStream outBuff = new BufferedOutputStream(output);
 
         // 缓冲数组
-        byte[] b = new byte[1024 * 5];
+        byte[] b = new byte[1024 * 8];
         int len;
         while ((len = inBuff.read(b)) != -1) {
             outBuff.write(b, 0, len);
@@ -84,6 +85,8 @@ public class FileUtils {
             }
         }
     }
+
+
 
     /**
      * 解压文件到指定目录

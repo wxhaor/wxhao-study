@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * @author wxhao
  * @date 2019/8/13
  */
-public class BDYGroupTest {
+public class GPGroupV1Test {
 
 
     @Test

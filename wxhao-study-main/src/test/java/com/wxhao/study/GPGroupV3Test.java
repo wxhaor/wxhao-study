@@ -1,10 +1,11 @@
 package com.wxhao.study;
 
 import com.wxhao.study.filetool.FileGroupUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.wxhao.study.filetool.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -13,33 +14,46 @@ import java.util.stream.Stream;
  * 文件分为 视频 非视频
  * 解压
  */
-@Slf4j
-public class BdwpV1Test {
+public class GPGroupV3Test {
 
     String sourceRootFileName = "D:\\咕泡学院\\百度网盘";
 
     List<String> fileSources = Arrays.asList(
 //            "01.架构师内功心法",
 //            "02.架构师审美观",
-//            "03.分布式与微服务",
+//            "03.分布式与高并发",
 //            "04.分布式与微服务",
-            "05.架构师必备工具箱"
+//            "05.架构师必备工具箱",
+            "06.性能优化"
     );
 
     @Test
     public void groupBy() {
+        System.out.println("---group start---");
         List<String> videoFolderNames = Arrays.asList(
                 "录播视频"
         );
 
-        String defaultTargetRootFileName = "D:\\咕泡学院\\BdwpV1Test\\default";
-        String videoTargetRootFileName = "D:\\咕泡学院\\BdwpV1Test\\video";
+        String defaultTargetRootFileName = "D:\\咕泡学院\\_default";
+        String videoTargetRootFileName = "D:\\咕泡学院\\_videoZip";
+        String videoTargetGPlayerFileName = "D:\\GPlayer\\100038";
         FileGroupUtils instance = FileGroupUtils.getInstance(
                 sourceRootFileName,
                 defaultTargetRootFileName,
                 videoTargetRootFileName,
+                videoTargetGPlayerFileName,
                 videoFolderNames);
         instance.recursiveFiles(fileSources);
+
+    }
+
+    @Test
+    public void testUpZip() {
+        try {
+            FileUtils.unZip("D:\\咕泡学院\\BdwpV1Test\\Redis基础篇.zip", "D:\\咕泡学院\\BdwpV1Test");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

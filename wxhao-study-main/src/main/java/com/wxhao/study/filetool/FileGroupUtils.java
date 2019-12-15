@@ -1,12 +1,17 @@
 package com.wxhao.study.filetool;
 
 
-import java.io.File;
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class FileGroupUtils {
 
@@ -25,6 +30,10 @@ public class FileGroupUtils {
      */
     String videoTargetRootFileName;
 
+
+    String videoTargetGPlayerFileName;
+
+
     /**
      * 初始化分组实例
      *
@@ -38,6 +47,7 @@ public class FileGroupUtils {
             String sourceRootFileName,
             String defaultTargetRootFileName,
             String videoTargetRootFileName,
+            String videoTargetGPlayerFileName,
             List<String> videoFolderNames
     ) {
         FileGroupUtils fileGroupUtils = new FileGroupUtils();
@@ -45,6 +55,7 @@ public class FileGroupUtils {
         fileGroupUtils.defaultTargetRootFileName = defaultTargetRootFileName;
         fileGroupUtils.videoTargetRootFileName = videoTargetRootFileName;
         fileGroupUtils.videoFolderNames.addAll(videoFolderNames);
+        fileGroupUtils.videoTargetGPlayerFileName = videoTargetGPlayerFileName;
         // todo 传list
         FileUtils.ifNotExistsMkdir(defaultTargetRootFileName);
         FileUtils.ifNotExistsMkdir(videoTargetRootFileName);
@@ -59,6 +70,7 @@ public class FileGroupUtils {
 
     public void recursiveFile(String path) {
         File rootFile = new File(path);
+        System.out.println("recursiveFile:"+path);
         Stream.of(rootFile.listFiles()).forEach(file -> {
             String filePath = file.getPath();
             if (file.isDirectory()) {
@@ -70,12 +82,64 @@ public class FileGroupUtils {
                 if (videoFolderNames.contains(parentFileName)) {
                     dealFile(filePath, videoTargetRootFileName, s -> {
                         //todo 解压
+                        upZip(filePath);
                     });
                 } else {
                     dealFile(filePath, defaultTargetRootFileName, null);
                 }
             }
         });
+    }
+
+    private void upZip(String filePath) {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            File zipFile = new File(filePath);
+            ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));
+            for (Enumeration entries = zip.entries(); entries.hasMoreElements(); ) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                String zipEntryName = entry.getName();
+                long size = entry.getSize();
+                if (size < 1024) {
+                    continue;
+                }
+                in = zip.getInputStream(entry);
+                String[] split = zipEntryName.split("/");
+                String outPath = videoTargetGPlayerFileName + File.separator + split[split.length - 1];
+                // 输出文件路径信息
+                File pathFile = new File(outPath);
+                if (pathFile.exists()) {
+                    continue;
+                }
+                out = new FileOutputStream(outPath);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("zipError:" + filePath);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
     }
 
     public void dealFile(String path, String targetRootFileName, Consumer<String> consumer) {
@@ -93,13 +157,12 @@ public class FileGroupUtils {
             File file = new File(targetFilePath);
             if (!file.exists()) {
                 FileUtils.copyFile(path, targetFilePath);
-                if (consumer != null) {
-                    consumer.accept(targetFilePath);
-                }
             } else {
                 System.out.println("已存在:" + targetFilePath);
             }
-
+            if (consumer != null) {
+                consumer.accept(targetFilePath);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

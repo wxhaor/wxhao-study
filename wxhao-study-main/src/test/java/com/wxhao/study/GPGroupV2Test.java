@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * 新版 兼容
  */
 @Slf4j
-public class BdwpTest {
+public class GPGroupV2Test {
     static String groupFolder = "04.分布式与微服务";
     String bdwpFolder = "D:\\咕泡学院\\百度网盘\\" + groupFolder;
 
